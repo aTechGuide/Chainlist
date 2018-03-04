@@ -3,16 +3,44 @@
 This DAPP is an emulatin of craiglist and is build as a project of [this](https://www.udemy.com/getting-started-with-ethereum-solidity-development/) course.  
 We have used Ethereum block chain and Truffle to build this DAPP
 
-## Commands
-### Events
-To watch Event  
-``` var sellEvent = app.LogSellArticle({}, {fromBlock: 0, toBlock:'latest'}).watch(function(error,event) {console.log(event);}) ```
+## Truffle Commands
+To compile contract  
+``` truffle migrate --compile-all --reset --network ganache  // Compile contract```
 
-To stop watching event   
-``` sellEvent.stopWatching() ```
+To connect to console  
+``` truffle console --network ganache ```
 
-To watch Latest Event  
-``` var sellEvent = app.LogSellArticle({}, {}).watch(function(error,event) {console.log(event);}) // Default for both parameters (fromBlock and toBlock) is latest ```
+To interact with contract  
+```
+ChainList.deployed().then(function(instance) {app=instance;})
+app.getArticle()
+app.sellArticle("Article 1 ", "Description of Article 1", web3.toWei(10, "ether"), {from: web3.eth.accounts[1]})
+app.buyArticle({from: web3.eth.accounts[2], value: web3.toWei(10, "ether")})
+```
+
+To check balance  
+``` web3.fromWei(web3.eth.getBalance(web3.eth.accounts[0]), "ether").toNumber() ```
+
+Events  
+``` 
+var sellEvent = app.LogSellArticle({}, {fromBlock: 0, toBlock:'latest'}).watch(function(error,event) {console.log(event);}) 
+sellEvent.stopWatching()
+var sellEvent = app.LogSellArticle({}, {}).watch(function(error,event) {console.log(event);}) // Default for both parameters (fromBlock and toBlock) is latest
+var buyEvent = app.LogBuyArticle({_seller: web3.eth.accounts[1]}, {}).watch(function(error,event) {console.log(event);})
+```
+
+## DApp Commands
+Run DAPP  
+``` npm run dev ```
+
+## Web3 Commands
+```
+web3.fromWei(web3.eth.getBalance(web3.eth.accounts[0]), "ether").toNumber() // To get account balance
+web3.eth.coinbase // To get Primary account
+web3.eth.sendTransaction({from: web3.eth.accounts[0], to: web3.eth.accounts[1], value: web3.toWei(5, "ether")}) // To transfer ether
+```
 
 ## Important Online Resources
 - [Hex to string Converter](https://codebeautify.org/hex-string-converter)
+- [Gas Station](https://ethgasstation.info/)
+- [Online converter to ops code](https://etherscan.io/opcode-tool)
