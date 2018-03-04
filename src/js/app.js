@@ -9,6 +9,8 @@ App = {
   },
 
   initWeb3: function () {
+
+    console.log("InitWeb3 function called");
     // initialize web3
     if (typeof web3 !== 'undefined') {
       // Resuse provider of web3 object injected by metamask
@@ -26,6 +28,7 @@ App = {
   },
 
   displayAccountInfo: function () {
+    console.log("DisplayAccountInfo function called");
     // Below call will return the account currently selected in metamask
     web3.eth.getCoinbase(function (err, account) {
       if (err === null) {
@@ -41,6 +44,7 @@ App = {
   },
 
   initContract: function () {
+    console.log("Init Contract function called");
     $.getJSON('ChainList.json', function (ChainListArtifact) {
       // get Contract artifact file and ise it to instantiate truffle contract abstraction
       App.contracts.ChainList = TruffleContract(ChainListArtifact);
@@ -56,6 +60,7 @@ App = {
 
   reloadArticles: function () {
     // refersh account information because the balance might have changed
+    console.log("Reload Article function called");
     App.displayAccountInfo();
 
     // retrieve the article placeholder and clear it
@@ -93,6 +98,7 @@ App = {
 
   sellArticle: function () {
     //Retrieve details of article from modal diaglog
+    console.log("Sell Article function called");
     var _article_name = $('#article_name').val();
     var _description = $('#article_description').val();
     var _price = web3.toWei(parseFloat($('#article_price').val() || 0), "ether");
@@ -116,6 +122,7 @@ App = {
 
   // listen to events triggered by contract
   listenToEvents: function () {
+    console.log("Listen To Events function called");
     App.contracts.ChainList.deployed().then(function (instance) {
       instance.LogSellArticle({}, {}).watch(function (error, event) {
         if(!error) {
