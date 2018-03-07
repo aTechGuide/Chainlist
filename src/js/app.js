@@ -2,6 +2,7 @@ App = {
   web3Provider: null,
   contracts: {},
   account: 0x0,
+  loading: false,
 
   init: function () {
 
@@ -59,59 +60,63 @@ App = {
   },
 
   reloadArticles: function () {
+
+    // avoid reentry
+    if (App.loading) {
+      return;
+    }
+    App.loading = true;
+
     // refersh account information because the balance might have changed
     console.log("Reload Article function called");
     App.displayAccountInfo();
 
-    // retrieve the article placeholder and clear it
-    $('#articlesRow').empty();
+    var chainListInstance;
 
     App.contracts.ChainList.deployed().then(function (instance) {
-      return instance.getArticle();
-    }).then(function (article) {
-      if (article[0] == 0x0) {
-        // no article to display
-        return;
+      chainListInstance = instance;
+      return chainListInstance.getArticlesForSale();
+    }).then(function (articleIds) {
+
+      // retrieve the article placeholder and clear it
+      $('#articlesRow').empty();
+
+      for (var index = 0; index < articleIds.length; index++) {
+        var articleId = articleIds[index];
+        chainListInstance.articles(articleId.toNumber()).then(function (article) {
+          App.displayArticle(article[0], article[1], article[3], article[4], article[5]);
+        });
       }
-
-      var price = web3.fromWei(article[4], "ether");
-
-      // Retrieve the article template and fill it with data
-
-      // load articlesRow
-      var articlesRow = $('#articlesRow');
-      var articleTemplate = $('#articleTemplate');
-
-      articleTemplate.find('.panel-title').text(article[2]);
-      articleTemplate.find('.article-description').text(article[3]);
-      articleTemplate.find('.article-price').text(price);
-      articleTemplate.find('.btn-buy').attr('data-value', price);
-
-      var seller = article[0];
-      if (seller == App.account) {
-        seller = "You";
-      }
-      articleTemplate.find('.article-seller').text(seller);
-
-      // buyer
-      var buyer = article[1];
-      if(buyer == App.account) {
-        buyer = "You";
-      } else if(buyer == 0x0) {
-        buyer = "No one yet";
-      }
-      articleTemplate.find('.article-buyer').text(buyer);
-
-      if(article[0] == App.account || article[1] != 0x0) {
-        articleTemplate.find('.btn-buy').hide();
-      } else {
-        articleTemplate.find('.btn-buy').show();
-      }
-
-      articlesRow.append(articleTemplate.html());
+      App.loading = false;
     }).catch(function (err) {
-      console.log(err.message)
+      console.log(err.message);
+      App.loading = false;
     });
+  },
+
+  displayArticle: function (id, seller, name, description, price) {
+    var articlesRow = $('#articlesRow');
+    var etherPrice = web3.fromWei(price, "ether");
+    var articleTemplate = $('#articleTemplate');
+
+    articleTemplate.find('.panel-title').text(name);
+    articleTemplate.find('.article-description').text(description);
+    articleTemplate.find('.article-price').text(etherPrice + " ETH");
+    articleTemplate.find('.btn-buy').attr('data-id', id);
+    articleTemplate.find('.btn-buy').attr('data-value', etherPrice);
+
+    // seller
+    if (seller == App.account) {
+      articleTemplate.find('.article-seller').text("You");
+      articleTemplate.find('.btn-buy').hide();
+    } else {
+      articleTemplate.find('.article-seller').text(seller);
+      articleTemplate.find('.btn-buy').show();
+    }
+
+    // add this new article to list of articles
+    articlesRow.append(articleTemplate.html()); 
+    
   },
 
   sellArticle: function () {
@@ -143,7 +148,7 @@ App = {
     console.log("Listen To Events function called");
     App.contracts.ChainList.deployed().then(function (instance) {
       instance.LogSellArticle({}, {}).watch(function (error, event) {
-        if(!error) {
+        if (!error) {
           $("#events").append('<li class="list-group-item">' + event.args._name + ' is now for sale </li>')
         } else {
           console.error(error);
@@ -152,7 +157,7 @@ App = {
       });
 
       instance.LogBuyArticle({}, {}).watch(function (error, event) {
-        if(!error) {
+        if (!error) {
           $("#events").append('<li class="list-group-item">' + event.args._buyer + ' bought ' + event.args._name + '</li>')
         } else {
           console.error(error);
@@ -162,16 +167,17 @@ App = {
     });
   },
 
-  buyArticle: function() {
+  buyArticle: function () {
     console.log("Buy Article function called");
     event.preventDefault();
 
     // retrieve the article price
     var _price = parseFloat($(event.target).data('value'));
+    var _articleId = $(event.target).data('id');
 
-    App.contracts.ChainList.deployed().then(function(instance){
-      return instance.buyArticle({ from: App.account, value: web3.toWei(_price, "ether"), gas: 500000});
-    }).catch(function(error) {
+    App.contracts.ChainList.deployed().then(function (instance) {
+      return instance.buyArticle(_articleId, { from: App.account, value: web3.toWei(_price, "ether"), gas: 500000 });
+    }).catch(function (error) {
       console.error(error);
     });
   }

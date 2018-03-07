@@ -13,9 +13,10 @@ To connect to console
 To interact with contract  
 ```
 ChainList.deployed().then(function(instance) {app=instance;})
-app.getArticle()
+app.getArticlesForSale()
+app.getNumberOfArticles()
 app.sellArticle("Article 1 ", "Description of Article 1", web3.toWei(10, "ether"), {from: web3.eth.accounts[1]})
-app.buyArticle({from: web3.eth.accounts[2], value: web3.toWei(10, "ether")})
+app.buyArticle(1, {from: web3.eth.accounts[3], value: web3.toWei(10, "ether")})
 ```
 
 To check balance  
@@ -37,7 +38,7 @@ Run DAPP
 ```
 web3.fromWei(web3.eth.getBalance(web3.eth.accounts[0]), "ether").toNumber() // To get account balance
 web3.eth.coinbase // To get Primary account
-web3.eth.sendTransaction({from: web3.eth.accounts[0], to: web3.eth.accounts[1], value: web3.toWei(5, "ether")}) // To transfer ether
+web3.eth.sendTransaction({from: web3.eth.accounts[0], to: web3.eth.accounts[1], value: web3.toWei(5, "ether")})
 ```
 
 ## Important Online Resources

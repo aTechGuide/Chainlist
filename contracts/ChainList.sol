@@ -2,31 +2,68 @@ pragma solidity ^0.4.18;
 
 contract ChainList {
 
-  // State Variales
-  address seller;
-  address buyer;
-  string name;
-  string description;
-  uint256 price;
+  // custom types
+  struct Article {
+
+    uint id;
+    address seller;
+    address buyer;
+    string name;
+    string description;
+    uint256 price;
+
+  }
+
+  // because of public compiler will generate a getter for this variable
+  mapping (uint => Article) public articles;
+  uint articleCounter;
 
   // events
-  event LogSellArticle(address indexed _seller, string _name, uint256 _price);
+  event LogSellArticle(uint indexed _id, address indexed _seller, string _name, uint256 _price);
 
-  event LogBuyArticle(address indexed _seller, address indexed _buyer, string _name, uint256 _price);
+  event LogBuyArticle(uint indexed _id, address indexed _seller, address indexed _buyer, string _name, uint256 _price);
 
   // sell an article
   function sellArticle(string _name, string _description, uint256 _price) public {
-    seller = msg.sender;
-    name = _name;
-    description = _description;
-    price = _price;
 
-    LogSellArticle(seller, name, price);
+    // increment article 
+    articleCounter++;
+
+    // Article() looks like a constructor and is automatically generated
+    // store this article
+    articles[articleCounter] = Article(articleCounter, msg.sender, 0x0, _name, _description, _price);
+
+    LogSellArticle(articleCounter, msg.sender, _name, _price);
   }
 
-  function getArticle() public view returns (address _seller, address _buyer, string _name, string _description, uint256 _price) {
+  // fetch the number of articles in the ocntract
+  function getNumberOfArticles() public view returns (uint) {
+    return articleCounter;
+  }
 
-    return(seller, buyer, name, description, price);
+  // fetch and return all article IDs for articles still for sale
+  function getArticlesForSale() public view returns (uint[]) {
+    // prepare output array
+    uint[] memory articleIds = new uint[](articleCounter);
+
+    uint numberOfArticlesForSale = 0;
+
+    // iterate over articles
+    for (uint i = 1; i <= articleCounter; i++) {
+      //keep the ID of the article is still for sale
+      if (articles[i].buyer == 0x0) {
+        articleIds[numberOfArticlesForSale] = articles[i].id;
+        numberOfArticlesForSale++;
+      }
+    }
+    
+    // copy the articleIds array into smaller forSale array
+    uint[] memory forSale = new uint[](numberOfArticlesForSale);
+
+    for (uint j = 0; j < numberOfArticlesForSale; j++) {
+      forSale[j] = articleIds[j];
+    }
+    return forSale;
   }
 
   // Buy article
@@ -43,28 +80,33 @@ contract ChainList {
   // revert = imperatively  interrupt function execution when condition to do so is more  sophisticated than precondition
   // address has two function to send value to account: Send and Transfer. Send returns true/false depends on value transfer worked or not. So its our reponsibility to check return value and do revert etc
   // transfer automatically throws revertStyleException in contract if the value transfer fails
-  function buyArticle() payable public {
-    // Check whether there is an article for sell
+  function buyArticle(uint _id) payable public {
 
-    require(seller != 0x0);
+    require(articleCounter > 0);
+
+    // we check article exists
+    require(_id > 0 && _id <= articleCounter);
+
+    // we retrieve article from mapping
+    Article storage article = articles[_id];
 
     // Chek article has not been sold yet
-    require(buyer == 0x0);
+    require(article.buyer == 0x0);
 
     // we don't allow the seller to buy its own article
-    require(msg.sender != seller);
+    require(msg.sender != article.seller);
 
     // we check that value sent correspods to proce of the article
-    require(msg.value == price);
+    require(msg.value == article.price);
 
     // keep buyer's information
 
-    buyer = msg.sender;
+    article.buyer = msg.sender;
 
     // buyer can pay seller
-    seller.transfer(msg.value);
+    article.seller.transfer(msg.value);
 
     // trigger the event
-    LogBuyArticle(seller, buyer, name, price);
+    LogBuyArticle(_id, article.seller, article.buyer, article.name, article.price);
   }
 }
