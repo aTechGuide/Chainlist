@@ -17,6 +17,7 @@ app.getArticlesForSale()
 app.getNumberOfArticles()
 app.sellArticle("Article 1 ", "Description of Article 1", web3.toWei(10, "ether"), {from: web3.eth.accounts[1]})
 app.buyArticle(1, {from: web3.eth.accounts[3], value: web3.toWei(10, "ether")})
+app.kill({from: web3.eth.accounts[0]})
 ```
 
 To check balance  
