@@ -1,6 +1,8 @@
 pragma solidity ^0.4.18;
 
-contract ChainList {
+import "./Ownable.sol";
+
+contract ChainList is Ownable {
 
   // custom types
   struct Article {
@@ -18,26 +20,10 @@ contract ChainList {
   mapping (uint => Article) public articles;
   uint articleCounter;
 
-  // Owner
-  address owner;
-
   // events
   event LogSellArticle(uint indexed _id, address indexed _seller, string _name, uint256 _price);
 
   event LogBuyArticle(uint indexed _id, address indexed _seller, address indexed _buyer, string _name, uint256 _price);
-
-  // modifiers
-  // underscore is a place holder that represents the code of fucntion that this modofier is applied to
-  modifier onlyOwner() {
-    require(msg.sender == owner);
-    _;
-  }
-
-  // constructor
-  // This function is called only once when the contract is deployed
-  function ChainList() public {
-    owner = msg.sender;
-  }
 
   // deactivate the contract
   function kill() public onlyOwner {

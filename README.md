@@ -46,3 +46,4 @@ web3.eth.sendTransaction({from: web3.eth.accounts[0], to: web3.eth.accounts[1], 
 - [Hex to string Converter](https://codebeautify.org/hex-string-converter)
 - [Gas Station](https://ethgasstation.info/)
 - [Online converter to ops code](https://etherscan.io/opcode-tool)
+- [Contract Inheritance](http://solidity.readthedocs.io/en/latest/contracts.html#inheritance)
