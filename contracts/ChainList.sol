@@ -21,6 +21,18 @@ contract ChainList {
   // Owner
   address owner;
 
+  // events
+  event LogSellArticle(uint indexed _id, address indexed _seller, string _name, uint256 _price);
+
+  event LogBuyArticle(uint indexed _id, address indexed _seller, address indexed _buyer, string _name, uint256 _price);
+
+  // modifiers
+  // underscore is a place holder that represents the code of fucntion that this modofier is applied to
+  modifier onlyOwner() {
+    require(msg.sender == owner);
+    _;
+  }
+
   // constructor
   // This function is called only once when the contract is deployed
   function ChainList() public {
@@ -28,17 +40,9 @@ contract ChainList {
   }
 
   // deactivate the contract
-  function kill() public {
-    // only allow the contract owner
-    require(msg.sender == owner);
-
+  function kill() public onlyOwner {
     selfdestruct(owner);
   }
-
-  // events
-  event LogSellArticle(uint indexed _id, address indexed _seller, string _name, uint256 _price);
-
-  event LogBuyArticle(uint indexed _id, address indexed _seller, address indexed _buyer, string _name, uint256 _price);
 
   // sell an article
   function sellArticle(string _name, string _description, uint256 _price) public {
