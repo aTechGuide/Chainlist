@@ -18,6 +18,23 @@ contract ChainList {
   mapping (uint => Article) public articles;
   uint articleCounter;
 
+  // Owner
+  address owner;
+
+  // constructor
+  // This function is called only once when the contract is deployed
+  function ChainList() public {
+    owner = msg.sender;
+  }
+
+  // deactivate the contract
+  function kill() public {
+    // only allow the contract owner
+    require(msg.sender == owner);
+
+    selfdestruct(owner);
+  }
+
   // events
   event LogSellArticle(uint indexed _id, address indexed _seller, string _name, uint256 _price);
 
