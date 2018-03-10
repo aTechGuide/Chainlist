@@ -3,6 +3,9 @@
 This DAPP is an emulatin of craiglist and is build as a project of [this](https://www.udemy.com/getting-started-with-ethereum-solidity-development/) course.  
 We have used Ethereum block chain and Truffle to build this DAPP
 
+## Live Preview
+[ChailList Web Console](https://kamranali.in/Chainlist/)
+
 ## Truffle Commands
 To compile contract  
 ``` truffle migrate --compile-all --reset --network ganache  // Compile contract```
@@ -45,5 +48,6 @@ web3.eth.sendTransaction({from: web3.eth.accounts[0], to: web3.eth.accounts[1], 
 ## Important Online Resources
 - [Hex to string Converter](https://codebeautify.org/hex-string-converter)
 - [Gas Station](https://ethgasstation.info/)
+- [Currency Converter](https://converter.murkin.me/)
 - [Online converter to ops code](https://etherscan.io/opcode-tool)
 - [Contract Inheritance](http://solidity.readthedocs.io/en/latest/contracts.html#inheritance)
