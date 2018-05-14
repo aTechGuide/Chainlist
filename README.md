@@ -1,7 +1,6 @@
 # Chainlist DAPP
 
-This DAPP is an emulatin of craiglist and is build as a project of [this](https://www.udemy.com/getting-started-with-ethereum-solidity-development/) course.  
-We have used Ethereum block chain and Truffle to build this DAPP
+Emulatin of craiglist on Ethereum block chain. This DAPP uses Truffle, Metamask.
 
 ## Live Preview
 [ChailList Web Console](https://kamranali.in/Chainlist/)
@@ -53,3 +52,4 @@ web3.eth.sendTransaction({from: web3.eth.accounts[0], to: web3.eth.accounts[1], 
 - [Contract Inheritance](http://solidity.readthedocs.io/en/latest/contracts.html#inheritance)
 - [Rinkeby Ether Scan](https://rinkeby.etherscan.io/)
 - [Live Ether Scan](https://etherscan.io/)
+- Course [link](https://www.udemy.com/getting-started-with-ethereum-solidity-development/)
