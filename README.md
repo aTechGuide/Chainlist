@@ -1,6 +1,6 @@
 # Chainlist DAPP
 
-Emulatin of craiglist on Ethereum block chain. This DAPP uses Truffle, Metamask.
+Emulation of craiglist on Ethereum block chain. This DAPP uses Truffle, Metamask.
 
 ## Live Preview
 [ChailList Web Console](https://kamranali.in/Chainlist/)
